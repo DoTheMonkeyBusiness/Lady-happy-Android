@@ -2,6 +2,7 @@ package com.egoriku.ladyhappy.catalog.subcategory.presentation.fragment
 
 import android.os.Bundle
 import android.view.View
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,6 +17,8 @@ import com.egoriku.ladyhappy.extensions.gone
 import com.egoriku.ladyhappy.extensions.logD
 import com.egoriku.ladyhappy.extensions.visible
 import com.skydoves.balloon.balloon
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import org.koin.androidx.scope.ScopeFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -60,8 +63,10 @@ class SubCategoryFragment : ScopeFragment(R.layout.fragment_catalog) {
             addItemDecoration(DividerItemDecoration(requireContext(), VERTICAL))
         }
 
-        catalogViewModel.subcategoryItems.observe(viewLifecycleOwner) {
-            binding.render(it)
+        lifecycleScope.launch {
+            catalogViewModel.subcategoryItems.collect {
+                binding.render(it)
+            }
         }
     }
 

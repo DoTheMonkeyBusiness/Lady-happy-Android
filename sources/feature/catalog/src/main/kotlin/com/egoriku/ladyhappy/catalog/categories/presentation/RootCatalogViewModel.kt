@@ -1,15 +1,22 @@
 package com.egoriku.ladyhappy.catalog.categories.presentation
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.liveData
+import androidx.lifecycle.viewModelScope
 import com.egoriku.ladyhappy.catalog.categories.domain.usecase.TabUseCase
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
 class RootCatalogViewModel(private val tabUseCase: TabUseCase) : ViewModel() {
 
-    val screenModel: LiveData<RootScreenModel> = liveData {
-        emit(RootScreenModel.Progress())
+    private val _screenModel = MutableStateFlow<RootScreenModel>(RootScreenModel.Progress())
 
-        emit(tabUseCase.loadTabs())
+    val screenModel: StateFlow<RootScreenModel>
+        get() = _screenModel
+
+    init {
+        viewModelScope.launch {
+            _screenModel.value = tabUseCase.loadTabs()
+        }
     }
 }
